@@ -49,9 +49,9 @@
         .framer-cover{
             position:fixed;
             bottom:10px;
-            right:35px;
+            right:34px;
 
-            width:155px;
+            width:160px;
             height:55px;
 
             background:white;
@@ -90,7 +90,7 @@
     <div class="right-strip"></div>
 
     <div class="framer-cover">
-        <span id="visitTimer">00:00:00</span>
+        <span id="visitTimer">00:00</span>
     </div>
 
     <script>
@@ -99,12 +99,13 @@
         function updateTimer() {
             const elapsed = Math.floor((Date.now() - startTime) / 1000);
 
-            const hours = String(Math.floor(elapsed / 3600)).padStart(2, "0");
+            // const hours = String(Math.floor(elapsed / 3600)).padStart(2, "0");
             const minutes = String(Math.floor((elapsed % 3600) / 60)).padStart(2, "0");
             const seconds = String(elapsed % 60).padStart(2, "0");
 
             document.getElementById("visitTimer").textContent =
-                `${hours}:${minutes}:${seconds}`;
+                //`${hours}:${minutes}:${seconds}`;
+                `${minutes}:${seconds}`;
         }
 
         updateTimer();
