@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- author="surakarapu shanmukh srinivas" -->
     <title>221B Labs</title>
 
@@ -111,6 +112,13 @@
         updateTimer();
         setInterval(updateTimer, 1000);
     </script>
+    <script>
+const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
+
+if (isMobile) {
+    window.location.replace("https://221blabst2.framer.website/");
+}
+</script>
 
 </body>
 </html>
