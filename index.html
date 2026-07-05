@@ -1,42 +1,34 @@
 <!DOCTYPE html>
-
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- author="surakarapu shanmukh srinivas" -->
     <title>221B Labs</title>
 
-    <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="favicon.jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
 
     <style>
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
 
-        html,body{
+        html, body {
             width:100%;
             height:100%;
             overflow:hidden;
             background:black;
         }
 
-        iframe{
+        #framerFrame {
             position:fixed;
             top:0;
             left:0;
-            width:100%;
-            height:100%;
             border:none;
         }
 
-        /* Right strip to hide scrollbar */
-        .right-strip{
+        /* Right strip to hide scrollbar - desktop only */
+        .right-strip {
             position:fixed;
             top:0;
             right:0;
@@ -47,79 +39,104 @@
             pointer-events:none;
         }
 
-        /* Floating timer covering the Framer badge */
-        .framer-cover{
+        /* Desktop clock covering the Framer badge */
+        .framer-cover {
             position:fixed;
             bottom:10px;
             right:34px;
-
             width:160px;
             height:55px;
-
             background:white;
             border-radius:28px;
-
             display:flex;
             justify-content:center;
             align-items:center;
-
-            /* font-family:Arial, Helvetica, sans-serif;
-            font-size:18px;
-            font-weight:600;
-            color:#000; */
-
-            font-family: "DotGothic16", monospace;
-            font-size: 22px;
-            font-weight: 400;
-            letter-spacing: 2px;
-            color: #222;
-
+            font-family:"DotGothic16", monospace;
+            font-size:22px;
+            font-weight:400;
+            letter-spacing:2px;
+            color:#222;
             box-shadow:0 8px 20px rgba(0,0,0,0.2);
-
             z-index:999999;
-
             pointer-events:auto;
             cursor:default;
             user-select:none;
+        }
+
+        /* Mobile-only black strip covering the Framer badge */
+        .mobile-badge-cover {
+            position:fixed;
+            bottom:0;
+            left:0;
+            width:100%;
+            height:60px;
+            background:black;
+            z-index:999999;
+            pointer-events:none;
         }
     </style>
 </head>
 
 <body>
 
-    <iframe src="https://221blabs.framer.website/"></iframe>
+    <iframe id="framerFrame" src="https://221blabs.framer.website/"></iframe>
 
-    <div class="right-strip"></div>
+    <div class="right-strip" id="rightStrip"></div>
 
-    <div class="framer-cover">
+    <div class="framer-cover" id="desktopClock">
         <span id="visitTimer">00:00</span>
     </div>
 
+    <div class="mobile-badge-cover" id="mobileCover" style="display:none;"></div>
+
     <script>
-        const startTime = Date.now();
+        const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
+        const frame = document.getElementById('framerFrame');
+        const desktopClock = document.getElementById('desktopClock');
+        const mobileCover = document.getElementById('mobileCover');
+        const rightStrip = document.getElementById('rightStrip');
 
-        function updateTimer() {
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        if (isMobile) {
+            // Hide desktop-only elements
+            desktopClock.style.display = 'none';
+            rightStrip.style.display = 'none';
+            mobileCover.style.display = 'block';
 
-            // const hours = String(Math.floor(elapsed / 3600)).padStart(2, "0");
-            const minutes = String(Math.floor((elapsed % 3600) / 60)).padStart(2, "0");
-            const seconds = String(elapsed % 60).padStart(2, "0");
+            // Force Framer's phone breakpoint: render the iframe at a fixed
+            // "phone" design width, then scale it up/down to fill the real
+            // screen width. This makes Framer's internal CSS think it's on
+            // a phone, regardless of how the outer page is embedded.
+            const designWidth = 390; // typical phone breakpoint width in Framer
 
-            document.getElementById("visitTimer").textContent =
-                //`${hours}:${minutes}:${seconds}`;
-                `${minutes}:${seconds}`;
+            function sizeFrame() {
+                const scale = window.innerWidth / designWidth;
+                frame.style.width = designWidth + 'px';
+                frame.style.height = (window.innerHeight / scale) + 'px';
+                frame.style.transform = `scale(${scale})`;
+                frame.style.transformOrigin = 'top left';
+            }
+
+            sizeFrame();
+            window.addEventListener('resize', sizeFrame);
+            window.addEventListener('orientationchange', sizeFrame);
+
+        } else {
+            // Desktop: full-size iframe, clock overlay, scrollbar cover
+            mobileCover.style.display = 'none';
+            frame.style.width = '100%';
+            frame.style.height = '100%';
+
+            const startTime = Date.now();
+            function updateTimer() {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = String(Math.floor((elapsed % 3600) / 60)).padStart(2, "0");
+                const seconds = String(elapsed % 60).padStart(2, "0");
+                document.getElementById("visitTimer").textContent = `${minutes}:${seconds}`;
+            }
+            updateTimer();
+            setInterval(updateTimer, 1000);
         }
-
-        updateTimer();
-        setInterval(updateTimer, 1000);
     </script>
-    <script>
-const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
-
-if (isMobile) {
-    window.location.replace("https://221blabs.framer.website/");
-}
-</script>
 
 </body>
 </html>
